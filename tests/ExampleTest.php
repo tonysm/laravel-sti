@@ -78,7 +78,7 @@ class ExampleTest extends TestCase
         factory(User::class)->create(['type' => null]);
         factory(User::class)->create(['type' => Employee::class]);
 
-        $users = Employee::withoutGlobalScope('inheritance')->get();
+        $users = Employee::withoutGlobalScope(\App\SingleTableInheritanceScope::class)->get();
 
         $this->assertCount(2, $users);
     }

@@ -6,7 +6,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use SingleTableInheritanceModel;
+    use SingleTableInheritance;
 
     /**
      * @var string

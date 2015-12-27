@@ -3,10 +3,9 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User as EloquentUser;
 
-trait SingleTableInheritanceModel
+trait SingleTableInheritance
 {
     /**
      * @var string
@@ -16,7 +15,7 @@ trait SingleTableInheritanceModel
     /**
      * @return bool
      */
-    protected static function isDirectChildOfEloquent()
+    protected static function isImediateChildOfEloquent()
     {
         return in_array(get_parent_class(static::class), [
             EloquentUser::class, Model::class
@@ -49,12 +48,10 @@ trait SingleTableInheritanceModel
     /**
      * Adds the single table inheritance global scope for all child models.
      */
-    public static function bootSingleTableInheritanceModel()
+    public static function bootSingleTableInheritance()
     {
-        if (! self::isDirectChildOfEloquent()) {
-            static::addGlobalScope('inheritance', function(Builder $builder) {
-                $builder->where('type', static::class);
-            });
+        if (! self::isImediateChildOfEloquent()) {
+            static::addGlobalScope(new SingleTableInheritanceScope(static::class));
         }
     }
 
@@ -69,7 +66,7 @@ trait SingleTableInheritanceModel
     public function fill(array $attributes)
     {
         // Adds the default type when creating child models.
-        if (!static::isDirectChildOfEloquent() && !isset($attributes['type'])) {
+        if (!static::isImediateChildOfEloquent() && !isset($attributes['type'])) {
             $attributes += ['type' => static::class];
         }
 

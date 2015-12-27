@@ -36,4 +36,25 @@ class ExampleTest extends TestCase
         $this->assertInstanceOf(Employee::class, $users->first());
         $this->assertInstanceOf(User::class, $users->last());
     }
+
+    public function testChildModelKeepsScope()
+    {
+        factory(User::class, 2)->create(['type' => Employee::class]);
+        factory(User::class)->create(['type' => null]);
+        $employees = Employee::all();
+
+        $this->assertCount(2, $employees);
+        $employees->each(function ($employee) {
+            $this->assertInstanceOf(Employee::class, $employee);
+        });
+    }
+
+    public function testChildModelDefaultsType()
+    {
+        $data = factory(User::class)->make()->toArray();
+        unset($data['type']);
+        $employee = Employee::create($data + ['password' => 'testing']);
+
+        $this->assertEquals(Employee::class, $employee->type);
+    }
 }

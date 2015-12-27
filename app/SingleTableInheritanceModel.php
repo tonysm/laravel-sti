@@ -69,7 +69,7 @@ trait SingleTableInheritanceModel
     public function fill(array $attributes)
     {
         // Adds the default type when creating child models.
-        if (!static::isDirectChildOfEloquent()) {
+        if (!static::isDirectChildOfEloquent() && !isset($attributes['type'])) {
             $attributes += ['type' => static::class];
         }
 

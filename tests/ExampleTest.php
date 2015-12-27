@@ -1,5 +1,6 @@
 <?php
 
+use App\Admin;
 use App\Employee;
 use App\User;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
@@ -56,5 +57,19 @@ class ExampleTest extends TestCase
         $employee = Employee::create($data + ['password' => 'testing']);
 
         $this->assertEquals(Employee::class, $employee->type);
+    }
+
+    public function testHandlesMultipleChilds()
+    {
+        factory(User::class)->create(['type' => null]);
+        factory(User::class)->create(['type' => Employee::class]);
+        factory(User::class)->create(['type' => Admin::class]);
+
+        $users = User::orderBy('type', 'DESC')->get();
+
+        $this->assertCount(3, $users);
+        $this->assertInstanceOf(Employee::class, $users[0]);
+        $this->assertInstanceOf(Admin::class, $users[1]);
+        $this->assertInstanceOf(User::class, $users[2]);
     }
 }

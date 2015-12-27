@@ -15,7 +15,11 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->name,
         'email' => $faker->email,
-        'type' => head($faker->shuffleArray([\App\Employee::class, null])),
+        'type' => head($faker->shuffleArray([
+            \App\Employee::class,
+            \App\Admin::class,
+            null
+        ])),
         'password' => bcrypt(str_random(10)),
         'remember_token' => str_random(10),
     ];

@@ -52,7 +52,7 @@ trait SingleTableInheritanceModel
     public static function bootSingleTableInheritanceModel()
     {
         if (! self::isDirectChildOfEloquent()) {
-            static::addGlobalScope('singleTableInheritance', function(Builder $builder) {
+            static::addGlobalScope('inheritance', function(Builder $builder) {
                 $builder->where('type', static::class);
             });
         }

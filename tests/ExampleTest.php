@@ -72,4 +72,14 @@ class ExampleTest extends TestCase
         $this->assertInstanceOf(Admin::class, $users[1]);
         $this->assertInstanceOf(User::class, $users[2]);
     }
+
+    public function testCanRemoveScope()
+    {
+        factory(User::class)->create(['type' => null]);
+        factory(User::class)->create(['type' => Employee::class]);
+
+        $users = Employee::withoutGlobalScope('inheritance')->get();
+
+        $this->assertCount(2, $users);
+    }
 }

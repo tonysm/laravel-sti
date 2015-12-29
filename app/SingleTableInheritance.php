@@ -10,12 +10,12 @@ trait SingleTableInheritance
     /**
      * @var string
      */
-    protected $inheritanceAt = 'type';
+    protected $inheritanceField = 'type';
 
     /**
      * @return bool
      */
-    protected static function isImediateChildOfEloquent()
+    protected static function isImmediateChildOfEloquent()
     {
         return in_array(get_parent_class(static::class), [
             EloquentUser::class, Model::class
@@ -30,15 +30,14 @@ trait SingleTableInheritance
     public function newFromBuilder($attributes = [], $connection = null)
     {
         $attributes = (array) $attributes;
-        $childClass = array_get($attributes, $this->inheritanceAt, null);
+        $childClass = array_get($attributes, $this->inheritanceField, null);
 
-        if ($this->inheritanceAt && $childClass && $childClass != static::class) {
+        if ($childClass && $childClass != static::class) {
             if (!class_exists($childClass)) {
                 throw new \RuntimeException("The class {$childClass} does not exist");
             }
 
             $model = new $childClass($attributes);
-
             return $model->newFromBuilder($attributes, $connection);
         }
 
@@ -50,7 +49,7 @@ trait SingleTableInheritance
      */
     public static function bootSingleTableInheritance()
     {
-        if (! self::isImediateChildOfEloquent()) {
+        if (! self::isImmediateChildOfEloquent()) {
             static::addGlobalScope(new SingleTableInheritanceScope(static::class));
         }
     }
@@ -66,7 +65,7 @@ trait SingleTableInheritance
     public function fill(array $attributes)
     {
         // Adds the default type when creating child models.
-        if (!static::isImediateChildOfEloquent() && !isset($attributes['type'])) {
+        if (!static::isImmediateChildOfEloquent() && !isset($attributes['type'])) {
             $attributes += ['type' => static::class];
         }
 

@@ -8,11 +8,6 @@ use Illuminate\Foundation\Auth\User as EloquentUser;
 trait SingleTableInheritance
 {
     /**
-     * @var string
-     */
-    protected static $inheritanceField = 'type';
-
-    /**
      * @return bool
      */
     protected static function isImmediateChildOfEloquent()
@@ -41,7 +36,7 @@ trait SingleTableInheritance
     public function newFromBuilder($attributes = [], $connection = null)
     {
         $attributes = (array) $attributes;
-        $childClass = array_get($attributes, static::$inheritanceField, null);
+        $childClass = array_get($attributes, static::getInheritanceField(), null);
 
         if ($childClass && $childClass != static::class) {
             if (!class_exists($childClass)) {
@@ -61,7 +56,7 @@ trait SingleTableInheritance
     public static function bootSingleTableInheritance()
     {
         if (! self::isImmediateChildOfEloquent()) {
-            static::addGlobalScope(new SingleTableInheritanceScope(static::class));
+            static::addGlobalScope(new SingleTableInheritanceScope(static::getInheritanceField(), static::class));
         }
     }
 
@@ -73,7 +68,7 @@ trait SingleTableInheritance
      */
     public static function create(array $attributes = [])
     {
-        $childClass = array_get($attributes, static::$inheritanceField. null);
+        $childClass = array_get($attributes, static::getInheritanceField(). null);
 
         if ($childClass && $childClass != static::class) {
             return $childClass::create($attributes);
@@ -92,11 +87,20 @@ trait SingleTableInheritance
      */
     public function fill(array $attributes)
     {
+        $field = static::getInheritanceField();
         // Adds the default type when creating child models.
-        if (!static::isImmediateChildOfEloquent() && !isset($attributes[static::$inheritanceField])) {
-            $attributes += [static::$inheritanceField => static::class];
+        if (!static::isImmediateChildOfEloquent() && !isset($attributes[$field])) {
+            $attributes += [$field => static::class];
         }
 
         return parent::fill($attributes);
+    }
+
+    /**
+     * @return string
+     */
+    protected static function getInheritanceField()
+    {
+        return 'type';
     }
 }

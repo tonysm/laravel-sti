@@ -14,13 +14,20 @@ class SingleTableInheritanceScope implements Scope
     private $scopedClass;
 
     /**
+     * @var string
+     */
+    private $inheritanceAttribute;
+
+    /**
      * SingleTableInheritanceScope constructor.
      *
+     * @param string $inheritanceAttribute
      * @param string $scopedClass
      */
-    public function __construct($scopedClass)
+    public function __construct($inheritanceAttribute, $scopedClass)
     {
         $this->scopedClass = $scopedClass;
+        $this->inheritanceAttribute = $inheritanceAttribute;
     }
 
     /**
@@ -32,6 +39,6 @@ class SingleTableInheritanceScope implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
-        $builder->where('type', '=', $this->scopedClass);
+        $builder->where($this->inheritanceAttribute, '=', $this->scopedClass);
     }
 }

@@ -10,7 +10,7 @@ trait SingleTableInheritance
     /**
      * @var string
      */
-    protected $inheritanceField = 'type';
+    protected static $inheritanceField = 'type';
 
     /**
      * @return bool
@@ -30,7 +30,7 @@ trait SingleTableInheritance
     public function newFromBuilder($attributes = [], $connection = null)
     {
         $attributes = (array) $attributes;
-        $childClass = array_get($attributes, $this->inheritanceField, null);
+        $childClass = array_get($attributes, static::$inheritanceField, null);
 
         if ($childClass && $childClass != static::class) {
             if (!class_exists($childClass)) {
@@ -55,6 +55,23 @@ trait SingleTableInheritance
     }
 
     /**
+     * Save a new model and return the instance.
+     *
+     * @param  array  $attributes
+     * @return static
+     */
+    public static function create(array $attributes = [])
+    {
+        $childClass = array_get($attributes, static::$inheritanceField. null);
+
+        if ($childClass && $childClass != static::class) {
+            return $childClass::create($attributes);
+        }
+
+        return parent::create($attributes);
+    }
+
+    /**
      * Fill the model with an array of attributes.
      *
      * @param  array  $attributes
@@ -65,8 +82,8 @@ trait SingleTableInheritance
     public function fill(array $attributes)
     {
         // Adds the default type when creating child models.
-        if (!static::isImmediateChildOfEloquent() && !isset($attributes['type'])) {
-            $attributes += ['type' => static::class];
+        if (!static::isImmediateChildOfEloquent() && !isset($attributes[static::$inheritanceField])) {
+            $attributes += [static::$inheritanceField => static::class];
         }
 
         return parent::fill($attributes);

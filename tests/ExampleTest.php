@@ -82,4 +82,12 @@ class ExampleTest extends TestCase
 
         $this->assertCount(2, $users);
     }
+
+    public function testCreatingUsersWithTypesReturnsChild()
+    {
+        $data = factory(User::class)->make(['type' => Employee::class])->toArray();
+        $user = User::create($data + ['password' => 'testing']);
+
+        $this->assertInstanceOf(Employee::class, $user);
+    }
 }

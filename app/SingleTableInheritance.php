@@ -17,9 +17,20 @@ trait SingleTableInheritance
      */
     protected static function isImmediateChildOfEloquent()
     {
-        return in_array(get_parent_class(static::class), [
-            EloquentUser::class, Model::class
-        ]);
+        $baseClasses = array_merge(
+            [EloquentUser::class, Model::class],
+            static::getBaseClasses()
+        );
+
+        return in_array(get_parent_class(static::class), $baseClasses);
+    }
+
+    /**
+     * @return array
+     */
+    protected static function getBaseClasses()
+    {
+        return [];
     }
 
     /**

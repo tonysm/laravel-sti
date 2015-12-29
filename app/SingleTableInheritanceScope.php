@@ -9,14 +9,14 @@ use Illuminate\Database\Eloquent\Builder;
 class SingleTableInheritanceScope implements Scope
 {
     /**
-     * @var
+     * @var string
      */
     private $scopedClass;
 
     /**
      * SingleTableInheritanceScope constructor.
      *
-     * @param $scopedClass
+     * @param string $scopedClass
      */
     public function __construct($scopedClass)
     {

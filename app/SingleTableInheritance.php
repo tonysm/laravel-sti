@@ -90,7 +90,7 @@ trait SingleTableInheritance
         $field = static::getInheritanceField();
         // Adds the default type when creating child models.
         if (!static::isImmediateChildOfEloquent() && !isset($attributes[$field])) {
-            $attributes += [$field => static::class];
+            $this->{$field} = static::class;
         }
 
         return parent::fill($attributes);
